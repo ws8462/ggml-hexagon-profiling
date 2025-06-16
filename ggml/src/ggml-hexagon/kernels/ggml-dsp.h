@@ -90,7 +90,7 @@ extern "C" {
 #else
 #define GGMLHEXAGON_DEBUG                                   1
 #endif
-
+#define GGMLHEXAGON_DEBUG                                   1 //25.06.16
 #define GGMLHEXAGON_LOGBUF_LEN                              4096
 #define GGMLHEXAGON_TMPBUF_LEN                              256
 #if GGMLHEXAGON_DEBUG
