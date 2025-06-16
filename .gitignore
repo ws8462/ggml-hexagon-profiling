@@ -53,8 +53,6 @@ debug
 !build.zig
 !docs/build.md
 /libllama.so
-!out/
-!out/android/bin/*.so
 /llama-*
 /vulkan-shaders-gen
 android-ndk-*
@@ -65,7 +63,8 @@ compile_commands.json
 ggml-metal-embed.metal
 llama-batched-swift
 /rpc-server
-out/
+!out/
+!out/android/bin/*.so
 tmp/
 autogen-*.md
 
