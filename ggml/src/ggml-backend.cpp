@@ -729,6 +729,34 @@ static char causes[GGML_DEFAULT_GRAPH_SIZE*16 + GGML_SCHED_MAX_SPLITS_DEBUG*GGML
 // returns the backend that should be used for the node based on the current locations
 static int ggml_backend_sched_backend_id_from_cur(ggml_backend_sched_t sched, struct ggml_tensor * tensor) {
     // assign pre-allocated nodes to their backend
+
+    static bool flag = false;
+
+    if(!flag) {
+        flag = true;
+        printf("=========== ggml backend pool ===========\n");
+        printf("total backends = %d\n", sched->n_backends);
+        for (int i = 0; i < sched->n_backends; i++) {
+            const char * name = ggml_backend_name(sched->backends[i]);
+            printf("backend[%d] = %s\n", i, name ? name : "CPU (default)");
+        }
+        printf("=========================================\n");
+    }
+    
+    //const int GPU_BACKEND_ID = 0;
+    const int NPU_BACKEND_ID = 0;
+    const int CPU_BACKEND_ID = 1;
+    
+    if (tensor->op == GGML_OP_MUL_MAT &&
+    tensor->src[0] &&
+    tensor->src[1] &&
+    tensor->src[0]->type == GGML_TYPE_Q8_0 &&
+    tensor->src[1]->type == GGML_TYPE_F32 &&
+    strstr(tensor->src[0]->name, "weight")) {
+        printf("[NPU-SELECT] %s: Q8_0 weight * F32 activation → NPU\n", tensor->name);
+        return NPU_BACKEND_ID;
+    }
+    
     int cur_backend_id = ggml_backend_sched_backend_from_buffer(sched, tensor, tensor);
     if (cur_backend_id != -1) {
         SET_CAUSE(tensor, "1.dst");
